@@ -1,0 +1,104 @@
+```{r}
+# load dataset
+data(mtcars)
+
+# look at the first rows
+head(mtcars)
+```
+
+
+```{r}
+?mtcars
+```
+
+```{r}
+# simpe regression: mpg -wt
+model <- lm(mpg ~ wt, data = mtcars)
+
+# see the model details
+summary(model)
+
+```
+#predictions
+
+```{r}
+#predict mpg for the test data
+pred <- predict(model,mtcars)
+
+# compare first 5 predictions with the actual
+head(data.frame(Actual = mtcars$mpg, Predicted = pred))
+```
+
+# how to detect collinearity
+```{r}
+# Correlation matrix
+cor(mtcars[, -1]) #checks correlation between prediction
+
+```
+
+# visualization
+```{r}
+plot(mtcars$wt,
+     mtcars$mpg,
+     main = "cars weight vs Milage",
+     xlab = "weight",
+     ylab = "Miles per Gallon",
+     pch = 18, col = "red")
+
+abline(model, col = "blue", lwd = 2)
+```
+```{r}
+# Classifying manual against automatic cars
+
+plot(mtcars$wt, mtcars$mpg,
+     pch = ifelse(mtcars$am == 0, 19, 17),  # circles for automatic, triangles for manual
+     col = "red")
+legend("topright", legend = c("Automatic", "Manual"),
+       pch = c(19, 17), col = "red")
+
+```
+```{r}
+plot(model) # plots 4 diagnostic plots
+```
+
+```{r}
+cooksd <- cooks.distance(model)
+plot(cooksd, type = "h")
+```
+```{r}
+#add an absolute line
+plot(cooksd, type = "h", main = "Cook's Distance", ylab = "Cook's D")
+abline(h = 4/nrow(mtcars), col = "red", lty = 2)  # threshold line
+
+```
+```{r}
+# finding influencing cars
+
+influential <- names(cooksd)[cooksd > (4/nrow(mtcars))]
+influential
+
+```
+```{r}
+# different types of plots 
+
+x <- 1:10
+y <- x^2
+
+par(mfrow=c(2,3))  # 2 rows, 3 cols of plots -- for the output
+
+plot(x, y, type="p", main="type = 'p'")
+plot(x, y, type="l", main="type = 'l'")
+plot(x, y, type="b", main="type = 'b'")
+plot(x, y, type="o", main="type = 'o'")
+plot(x, y, type="h", main="type = 'h'")
+plot(x, y, type="s", main="type = 's'")
+
+```
+
+```{r}
+# calculate confidence interval
+
+confint(model)
+
+```
+
